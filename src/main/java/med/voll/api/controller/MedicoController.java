@@ -7,11 +7,6 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("medicos")
 public class MedicoController {
 
-    @GetMapping
-    public String helloWorld() {
-        return "Ola mundo!";
-    }
-
     @PostMapping
     public void cadastrar(@RequestBody DadosCadastroMedico dados) {
         System.out.println(dados);
