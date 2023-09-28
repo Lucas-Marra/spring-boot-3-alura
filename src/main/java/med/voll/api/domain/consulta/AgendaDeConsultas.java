@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class AgendaDeConsultas {
@@ -35,7 +36,7 @@ public class AgendaDeConsultas {
         validadores.forEach(validador -> validador.validar(dados));
 
         var paciente = pacienteRepository.getReferenceById(dados.idPaciente());
-        var medico = escolherMedico(dados);
+        var medico = Optional.ofNullable(escolherMedico(dados)).orElseThrow(() -> new ValidacaoException("Não existe médico disponível nessa data"));
         var consulta = new Consulta(null, medico, paciente, dados.data(), null);
 
         consultaRepository.save(consulta);
@@ -54,9 +55,8 @@ public class AgendaDeConsultas {
     }
 
     public void cancelar(DadosCancelamentoConsulta dados) {
-        if (!consultaRepository.existsById(dados.idConsulta())) {
+        if (!consultaRepository.existsById(dados.idConsulta()))
             throw new ValidacaoException("Id da consulta informado não existe!");
-        }
 
         var consulta = consultaRepository.getReferenceById(dados.idConsulta());
         consulta.cancelar(dados.motivo());
